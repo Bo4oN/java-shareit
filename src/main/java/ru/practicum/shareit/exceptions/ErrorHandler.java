@@ -16,13 +16,19 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ErrorResponse handeDoesNotBelongToOwnerExceptions(final DoesNotBelongToOwnerException e) {
+    public ErrorResponse handleDoesNotBelongToOwnerExceptions(final DoesNotBelongToOwnerException e) {
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
-    public ErrorResponse handeEmailIsNotAvailableExceptions(final EmailIsNotAvailable e) {
+    public ErrorResponse handleIsNotAvailableExceptions(final IsNotAvailableException e) {
+        return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleItemAlreadyBookedException(final ItemAlreadyBookedException e) {
         return new ErrorResponse(e.getMessage());
     }
 }

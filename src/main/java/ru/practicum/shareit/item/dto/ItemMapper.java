@@ -3,6 +3,7 @@ package ru.practicum.shareit.item.dto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ItemMapper {
@@ -11,7 +12,18 @@ public class ItemMapper {
                 item.getId(),
                 item.getName(),
                 item.getDescription(),
-                item.isAvailable()
+                item.isAvailable(),
+                Collections.emptyList()
+        );
+    }
+
+    public static ItemDtoOut toItemDtoOut(Item item) {
+        return new ItemDtoOut(
+                item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.isAvailable(),
+                Collections.emptyList()
         );
     }
 
@@ -28,5 +40,14 @@ public class ItemMapper {
             listDto.add(toItemDto(item));
         }
         return listDto;
+    }
+
+    public static ItemDtoWithBooking toItemDtoWithBookingDate(Item item) {
+        return new ItemDtoWithBooking(
+                item.getId(),
+                item.getName(),
+                item.getDescription(),
+                item.isAvailable()
+        );
     }
 }
