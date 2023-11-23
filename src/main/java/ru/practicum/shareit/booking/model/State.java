@@ -1,6 +1,5 @@
 package ru.practicum.shareit.booking.model;
 
-import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import ru.practicum.shareit.exceptions.ItemAlreadyBookedException;
 
 public enum State {
