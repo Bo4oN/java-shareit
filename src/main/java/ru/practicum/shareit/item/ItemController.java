@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.dto.ItemDtoOut;
+import ru.practicum.shareit.item.dto.ItemDtoResult;
 import ru.practicum.shareit.item.dto.ItemDtoWithBooking;
 import ru.practicum.shareit.item.model.Comment;
 
@@ -37,8 +37,8 @@ public class ItemController {
 
     @ResponseBody
     @GetMapping("/{itemId}")
-    public ItemDtoOut getItem(@PathVariable int itemId,
-                              @RequestHeader("X-Sharer-User-Id") int ownerId) {
+    public ItemDtoResult getItem(@PathVariable int itemId,
+                                 @RequestHeader("X-Sharer-User-Id") int ownerId) {
         return service.getItem(itemId, ownerId);
     }
 

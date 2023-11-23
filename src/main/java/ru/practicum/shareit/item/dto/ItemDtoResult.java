@@ -8,7 +8,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class ItemDtoOut {
+public class ItemDtoResult {
     private int id;
     private String name;
     private String description;
@@ -17,7 +17,7 @@ public class ItemDtoOut {
     private BookingDto lastBooking = null;
     private BookingDto nextBooking = null;
 
-    public ItemDtoOut(int id, String name, String description, Boolean available, List<CommentDto> commentsList) {
+    public ItemDtoResult(int id, String name, String description, Boolean available, List<CommentDto> commentsList) {
         this.id = id;
         this.name = name;
         this.description = description;
