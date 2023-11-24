@@ -2,7 +2,11 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoResult;
+import ru.practicum.shareit.item.dto.ItemDtoWithBooking;
+import ru.practicum.shareit.item.model.Comment;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -25,19 +29,22 @@ public class ItemController {
 
     @ResponseBody
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@PathVariable int itemId, @RequestBody ItemDto itemDto, @RequestHeader("X-Sharer-User-Id") int ownerId) {
+    public ItemDto updateItem(@PathVariable int itemId,
+                              @RequestBody ItemDto itemDto,
+                              @RequestHeader("X-Sharer-User-Id") int ownerId) {
         return service.updateItem(itemId, itemDto, ownerId);
     }
 
     @ResponseBody
     @GetMapping("/{itemId}")
-    public ItemDto getItem(@PathVariable int itemId) {
-        return service.getItem(itemId);
+    public ItemDtoResult getItem(@PathVariable int itemId,
+                                 @RequestHeader("X-Sharer-User-Id") int ownerId) {
+        return service.getItem(itemId, ownerId);
     }
 
     @ResponseBody
     @GetMapping
-    public List<ItemDto> getUserItems(@RequestHeader("X-Sharer-User-Id") int ownerId) {
+    public List<ItemDtoWithBooking> getUserItems(@RequestHeader("X-Sharer-User-Id") int ownerId) {
         return service.getItemsListByOwner(ownerId);
     }
 
@@ -45,5 +52,13 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> searchItems(@RequestParam String text) {
         return service.searchItems(text);
+    }
+
+    @ResponseBody
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@PathVariable int itemId,
+                                 @RequestBody @Valid Comment comment,
+                                 @RequestHeader("X-Sharer-User-Id") int authorId) {
+        return service.addComment(itemId, comment, authorId);
     }
 }
