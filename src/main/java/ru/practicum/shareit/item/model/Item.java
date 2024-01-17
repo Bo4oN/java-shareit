@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.model;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
@@ -27,11 +28,22 @@ public class Item {
     @JoinColumn(name = "owner_id")
     @ManyToOne
     private User owner;
+    @JoinColumn(name = "request_id")
+    @ManyToOne
+    private ItemRequest itemRequest;
 
     public Item(String name, String description, boolean available, User owner) {
         this.name = name;
         this.description = description;
         this.isAvailable = available;
         this.owner = owner;
+    }
+
+    public Item(String name, String description, boolean isAvailable, User owner, ItemRequest itemRequest) {
+        this.name = name;
+        this.description = description;
+        this.isAvailable = isAvailable;
+        this.owner = owner;
+        this.itemRequest = itemRequest;
     }
 }
