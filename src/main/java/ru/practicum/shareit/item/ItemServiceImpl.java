@@ -56,7 +56,8 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getAvailable() != null) i.setAvailable(itemDto.getAvailable());
         if (itemDto.getDescription() != null) i.setDescription(itemDto.getDescription());
         if (itemDto.getName() != null) i.setName(itemDto.getName());
-        return ItemMapper.toItemDto(repository.save(i));
+        repository.save(i);
+        return ItemMapper.toItemDto(i);
     }
 
     @Override
@@ -83,7 +84,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDtoWithBooking> getItemsListByOwner(int ownerId, int from, int size) {
         Pageable pageable = PageRequest.of(from, size);
-        List<Item> itemList = repository.findByOwnerId(ownerId, pageable).toList();
+        List<Item> itemList = repository.findByOwnerId(ownerId, pageable);
         List<ItemDtoWithBooking> itemListWithBooking = itemList.stream()
                 .map(ItemMapper::toItemDtoWithBookingDate)
                 .collect(Collectors.toList());
@@ -106,7 +107,8 @@ public class ItemServiceImpl implements ItemService {
     public List<ItemDto> searchItems(String text, int from, int size) {
         if (text.isBlank()) return Collections.emptyList();
         Pageable pageable = PageRequest.of(from, size);
-        return ItemMapper.toItemDtoList(repository.search(text, pageable));
+        List<Item> list = repository.search(text, pageable);
+        return ItemMapper.toItemDtoList(list);
     }
 
     @Override
@@ -124,6 +126,7 @@ public class ItemServiceImpl implements ItemService {
         comment.setAuthor(user);
         comment.setItem(item);
         comment.setCreatedDate(LocalDateTime.now());
-        return CommentMapper.toCommentDto(commentRepository.save(comment));
+        commentRepository.save(comment);
+        return CommentMapper.toCommentDto(comment);
     }
 }

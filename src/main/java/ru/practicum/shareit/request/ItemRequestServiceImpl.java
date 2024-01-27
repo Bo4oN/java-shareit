@@ -28,7 +28,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         ItemRequest request = repository.save(new ItemRequest(requestDto.getDescription(), user, LocalDateTime.now()));
         List<ItemForOutRequest> list = findItemsForRequest(request.getId());
-        System.out.println("Список итемов тут" + list);
         return RequestMapper.toDto(request, list);
     }
 
@@ -44,7 +43,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     @Override
     public List<ItemRequestDto> getAllResponses(int from, int size, int userId) {
         PageRequest pageable = PageRequest.of(from, size);
-        List<ItemRequest> requestList = repository.findAllByRequestorIdIsNotOrderByCreated(userId, pageable).toList();
+        List<ItemRequest> requestList = repository.findAllByRequestorIdIsNotOrderByCreated(userId, pageable);
         return requestList.stream()
                 .map(request -> RequestMapper.toDto(request, findItemsForRequest(request.getId())))
                 .collect(Collectors.toList());

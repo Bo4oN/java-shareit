@@ -21,11 +21,11 @@ public class ErrorHandler {
         return new ErrorResponse(e.getMessage());
     }
 
-    @ExceptionHandler
+    /*@ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleIsNotAvailableExceptions(final IsNotAvailableException e) {
         return new ErrorResponse(e.getMessage());
-    }
+    }*/
 
     @ExceptionHandler({MethodArgumentNotValidException.class, ItemAlreadyBookedException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)

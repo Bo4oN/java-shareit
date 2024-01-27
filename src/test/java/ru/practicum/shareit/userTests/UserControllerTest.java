@@ -60,19 +60,19 @@ public class UserControllerTest {
 
     @Test
     void updateUser() throws Exception {
-        UserDto updateUser = new UserDto(1, "updateName", "update@yandex.ru");
-        when(service.updateUser(user.getId(), updateUser)).thenReturn(updateUser);
+        UserDto userDto = new UserDto(1, "updateName", "update@yandex.ru");
+        when(service.updateUser(this.user.getId(), userDto)).thenReturn(userDto);
 
-        String responseString = mvc.perform(patch("/users/{userId}", user.getId())
+        String responseString = mvc.perform(patch("/users/{userId}", this.user.getId())
                         .contentType("application/json")
-                        .content(mapper.writeValueAsString(updateUser)))
+                        .content(mapper.writeValueAsString(userDto)))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse()
                 .getContentAsString();
 
-        assertEquals(responseString, mapper.writeValueAsString(updateUser));
-        verify(service, times(1)).updateUser(1, updateUser);
+        assertEquals(responseString, mapper.writeValueAsString(userDto));
+        verify(service, times(1)).updateUser(1, userDto);
     }
 
     @Test
