@@ -101,8 +101,8 @@ public class BookingServiceImpl implements BookingService {
                 list.addAll(repository.findByBookerIdAndStatusOrderByStartDesc(userId, Status.REJECTED, pageable));
                 break;
 
-            default:
-                throw new ItemAlreadyBookedException("Unknown state: " + state);
+            //default:
+            //    throw new ItemAlreadyBookedException("Unknown state: " + state);
         }
         return list.stream()
                 .map(BookingMapper::toBookingResult)
@@ -136,8 +136,8 @@ public class BookingServiceImpl implements BookingService {
                 list.addAll(repository.findStatusBookingForAllUserItems(userId, Status.REJECTED, pageable));
                 break;
 
-            default:
-                throw new ItemAlreadyBookedException("Unknown state: " + state);
+            //default:
+            //    throw new ItemAlreadyBookedException("Unknown state: " + state);
         }
         return list.stream()
                 .map(BookingMapper::toBookingResult)

@@ -16,6 +16,7 @@ import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.service.BookingServiceImpl;
 import ru.practicum.shareit.exceptions.ItemAlreadyBookedException;
+import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
@@ -109,6 +110,18 @@ class BookingServiceImplTest {
     }
 
     @Test
+    void changeOfApprovalWithException() {
+        assertThrows(NotFoundException.class,
+                () -> service.changeOfApproval(booking.getId(), true, testUser.getId()));
+
+        when(bookingRepository.findById(booking.getId()))
+                .thenReturn(Optional.of(BookingMapper.toBooking(booking, testItem, testUser)));
+
+        assertThrows(NotFoundException.class,
+                () -> service.changeOfApproval(booking.getId(), true, testUser.getId()));
+    }
+
+    @Test
     void changeOfNotApproval() {
         when(bookingRepository.findById(booking.getId()))
                 .thenReturn(Optional.of(BookingMapper.toBooking(booking, testItem, testUser)));
@@ -132,6 +145,21 @@ class BookingServiceImplTest {
         assertEquals(result.getEnd(), booking.getEnd());
         assertEquals(result.getItem(), testItem);
         assertEquals(result.getBooker(), testUser);
+    }
+
+    @Test
+    void getBookingByIdWithException() {
+        assertThrows(NotFoundException.class,
+                () -> service.getBookingById(booking.getId(), testUser.getId()));
+
+        when(bookingRepository.findById(booking.getId()))
+                .thenReturn(Optional.of(BookingMapper.toBooking(booking, testItem, testUser)));
+
+        assertThrows(NotFoundException.class,
+                () -> service.getBookingById(booking.getId(), testUser.getId()));
+
+        assertThrows(NotFoundException.class,
+                () -> service.getBookingById(booking.getId(), secondUser.getId()));
     }
 
     @Test
@@ -238,5 +266,57 @@ class BookingServiceImplTest {
         service.getAllBookingsForAllUserItems(State.CURRENT, testUser.getId(), 0, 10);
         verify(bookingRepository, times(1))
                 .findCurrentBookingsForAllUserItems(anyInt(), any(LocalDateTime.class), any(Pageable.class));
+    }
+
+    @Test
+    void getAllBookingsForAllUserItemsPast() {
+        when(userRepository.findById(testUser.getId()))
+                .thenReturn(Optional.of(testUser));
+        when(itemRepository.findByOwnerId(testUser.getId())).thenReturn(List.of(testItem));
+        when(bookingRepository.findPastBookingForAllUserItems(anyInt(), any(LocalDateTime.class), any(Pageable.class)))
+                .thenReturn(List.of(BookingMapper.toBooking(booking, testItem, testUser)));
+
+        service.getAllBookingsForAllUserItems(State.PAST, testUser.getId(), 0, 10);
+        verify(bookingRepository, times(1))
+                .findPastBookingForAllUserItems(anyInt(), any(LocalDateTime.class), any(Pageable.class));
+    }
+
+    @Test
+    void getAllBookingsForAllUserItemsFuture() {
+        when(userRepository.findById(testUser.getId()))
+                .thenReturn(Optional.of(testUser));
+        when(itemRepository.findByOwnerId(testUser.getId())).thenReturn(List.of(testItem));
+        when(bookingRepository.findFutureBookingForAllUserItems(anyInt(), any(LocalDateTime.class), any(Pageable.class)))
+                .thenReturn(List.of(BookingMapper.toBooking(booking, testItem, testUser)));
+
+        service.getAllBookingsForAllUserItems(State.FUTURE, testUser.getId(), 0, 10);
+        verify(bookingRepository, times(1))
+                .findFutureBookingForAllUserItems(anyInt(), any(LocalDateTime.class), any(Pageable.class));
+    }
+
+    @Test
+    void getAllBookingsForAllUserItemsWaiting() {
+        when(userRepository.findById(testUser.getId()))
+                .thenReturn(Optional.of(testUser));
+        when(itemRepository.findByOwnerId(testUser.getId())).thenReturn(List.of(testItem));
+        when(bookingRepository.findStatusBookingForAllUserItems(anyInt(), any(Status.class), any(Pageable.class)))
+                .thenReturn(List.of(BookingMapper.toBooking(booking, testItem, testUser)));
+
+        service.getAllBookingsForAllUserItems(State.WAITING, testUser.getId(), 0, 10);
+        verify(bookingRepository, times(1))
+                .findStatusBookingForAllUserItems(anyInt(), any(Status.class), any(Pageable.class));
+    }
+
+    @Test
+    void getAllBookingsForAllUserItemsRejected() {
+        when(userRepository.findById(testUser.getId()))
+                .thenReturn(Optional.of(testUser));
+        when(itemRepository.findByOwnerId(testUser.getId())).thenReturn(List.of(testItem));
+        when(bookingRepository.findStatusBookingForAllUserItems(anyInt(), any(Status.class), any(Pageable.class)))
+                .thenReturn(List.of(BookingMapper.toBooking(booking, testItem, testUser)));
+
+        service.getAllBookingsForAllUserItems(State.REJECTED, testUser.getId(), 0, 10);
+        verify(bookingRepository, times(1))
+                .findStatusBookingForAllUserItems(anyInt(), any(Status.class), any(Pageable.class));
     }
 }
