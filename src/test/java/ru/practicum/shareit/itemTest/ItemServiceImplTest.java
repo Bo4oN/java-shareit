@@ -8,7 +8,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.BookingRepository;
+import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.model.Booking;
+import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.exceptions.DoesNotBelongToOwnerException;
 import ru.practicum.shareit.exceptions.ItemAlreadyBookedException;
 import ru.practicum.shareit.item.CommentRepository;
@@ -120,12 +122,30 @@ public class ItemServiceImplTest {
 
     @Test
     void getItem() {
+        Booking booking1 = new Booking(1,
+                LocalDateTime.of(2023, 12, 20, 0, 0),
+                LocalDateTime.of(2023, 12, 30, 0, 0),
+                testItem,
+                testUser,
+                Status.WAITING);
+        Booking booking2 = new Booking(2,
+                LocalDateTime.of(2025, 1, 20, 0, 0),
+                LocalDateTime.of(2025, 1, 30, 0, 0),
+                testItem,
+                testUser,
+                Status.WAITING);
         when(itemRepository.findById(testItem.getId())).thenReturn(Optional.of(testItem));
         when(commentRepository.findByItemId(testItem.getId())).thenReturn(Collections.emptyList());
+        when(bookingRepository.findAllByItemIdOrderByStart(testItem.getId()))
+                .thenReturn(List.of(booking1, booking2));
+
+        ItemDtoResult itemDtoResult = ItemMapper.toItemDtoResult(testItem);
+        itemDtoResult.setLastBooking(BookingMapper.toBookingDto(booking1));
+        itemDtoResult.setNextBooking(BookingMapper.toBookingDto(booking2));
 
         ItemDtoResult itemDto = service.getItem(testItem.getId(), testUser.getId());
 
-        assertEquals(itemDto, ItemMapper.toItemDtoResult(testItem));
+        assertEquals(itemDto, itemDtoResult);
     }
 
     @Test
