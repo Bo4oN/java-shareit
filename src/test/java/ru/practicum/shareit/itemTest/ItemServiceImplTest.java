@@ -19,6 +19,8 @@ import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.request.ItemRequestRepository;
+import ru.practicum.shareit.request.dto.ItemForOutRequest;
+import ru.practicum.shareit.request.dto.RequestMapper;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -76,6 +78,7 @@ public class ItemServiceImplTest {
         request.setId(1);
         Item item = new Item("itemName", "itemDescription", true, testUser, request);
         item.setId(2);
+        ItemForOutRequest itemForOutRequest = RequestMapper.toItemForOutRequest(item);
         when(itemRepository.save(notNull())).thenReturn(item);
         when(userRepository.findById(testUser.getId())).thenReturn(Optional.of(testUser));
         when(requestRepository.findById(request.getId())).thenReturn(Optional.of(request));
