@@ -17,6 +17,8 @@ import ru.practicum.shareit.item.ItemServiceImpl;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -44,6 +46,9 @@ public class ItemServiceImplTest {
     @Mock
     private CommentRepository commentRepository;
 
+    @Mock
+    private ItemRequestRepository requestRepository;
+
     @InjectMocks
     private ItemServiceImpl service;
 
@@ -66,14 +71,23 @@ public class ItemServiceImplTest {
 
     @Test
     void addItem() {
-        when(itemRepository.save(notNull())).thenReturn(testItem);
+        ItemRequest request = new ItemRequest(
+                 "text", testUser, LocalDateTime.of(2023, 10, 10, 0, 0));
+        request.setId(1);
+        Item item = new Item("itemName", "itemDescription", true, testUser, request);
+        item.setId(2);
+        when(itemRepository.save(notNull())).thenReturn(item);
         when(userRepository.findById(testUser.getId())).thenReturn(Optional.of(testUser));
+        when(requestRepository.findById(request.getId())).thenReturn(Optional.of(request));
 
-        ItemDto itemDto = ItemMapper.toItemDto(testItem);
+
+        ItemDto itemDto = ItemMapper.toItemDto(item);
+        itemDto.setRequestId(1);
         ItemDto createdItem = service.addItem(itemDto, testUser.getId());
         assertEquals(itemDto, createdItem);
         verify(itemRepository, times(1)).save(notNull());
     }
+
 
     @Test
     void updateItem() {
