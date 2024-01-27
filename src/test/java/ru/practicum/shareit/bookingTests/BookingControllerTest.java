@@ -8,7 +8,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.booking.BookingController;
-import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingResult;
 import ru.practicum.shareit.booking.model.Booking;
@@ -20,7 +19,7 @@ import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -38,7 +37,7 @@ class BookingControllerTest {
     @Autowired
     ObjectMapper mapper;
 
-    private User user  = new User(1, "name", "test@ya.ru");
+    private User user = new User(1, "name", "test@ya.ru");
     private Item item = new Item("itemName", "itemDescription", true, user);
     private Booking booking;
 
@@ -115,11 +114,11 @@ class BookingControllerTest {
     @Test
     void getAllBookingsForAllUserItems() throws Exception {
 
-            mvc.perform(get("/bookings/owner")
-                            .header("X-Sharer-User-Id", 1))
-                    .andDo(print())
-                    .andExpect(status().isOk());
+        mvc.perform(get("/bookings/owner")
+                        .header("X-Sharer-User-Id", 1))
+                .andDo(print())
+                .andExpect(status().isOk());
 
-            verify(service).getAllBookingsForAllUserItems(State.ALL, user.getId(), 0, 10);
-        }
+        verify(service).getAllBookingsForAllUserItems(State.ALL, user.getId(), 0, 10);
     }
+}

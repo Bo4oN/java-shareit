@@ -18,7 +18,7 @@ import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -80,7 +80,7 @@ class ItemControllerTest {
                 .getContentAsString();
 
         assertEquals(responseString, mapper.writeValueAsString(updatingItem));
-        verify(service, times(1)).updateItem(item.getId(), updatingItem ,user.getId());
+        verify(service, times(1)).updateItem(item.getId(), updatingItem, user.getId());
     }
 
     @Test
@@ -98,7 +98,7 @@ class ItemControllerTest {
     void getUserItems() throws Exception {
 
         mvc.perform(get("/items")
-                .header("X-Sharer-User-Id", 1))
+                        .header("X-Sharer-User-Id", 1))
                 .andDo(print())
                 .andExpect(status().isOk());
 
@@ -109,7 +109,7 @@ class ItemControllerTest {
     void searchItems() throws Exception {
 
         mvc.perform(get("/items/search")
-                .param("text", "text"))
+                        .param("text", "text"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
