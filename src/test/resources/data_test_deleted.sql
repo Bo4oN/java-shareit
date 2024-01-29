@@ -1,4 +1,3 @@
-delete from comments cascade;
 delete from bookings cascade;
 delete from items cascade;
 delete from requests cascade;
