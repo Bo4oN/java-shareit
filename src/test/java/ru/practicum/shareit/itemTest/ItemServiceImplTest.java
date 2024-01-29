@@ -164,11 +164,13 @@ public class ItemServiceImplTest {
 
     @Test
     void searchItems() {
+        when(userRepository.findById(testUser.getId())).thenReturn(Optional.of(testUser));
         when(itemRepository.search("test", PageRequest.of(0, 10))).thenReturn(List.of(testItem));
 
-        assertEquals(service.searchItems("", 0, 10).size(), 0);
-        assertEquals(service.searchItems("test", 0, 10).size(), 1);
-        assertEquals(service.searchItems("test", 0, 10).get(0), ItemMapper.toItemDto(testItem));
+        assertEquals(service.searchItems("", testUser.getId(), 0, 10).size(), 0);
+        assertEquals(service.searchItems("test", testUser.getId(), 0, 10).size(), 1);
+        assertEquals(service.searchItems(
+                "test", testUser.getId(), 0, 10).get(0), ItemMapper.toItemDto(testItem));
     }
 
     @Test

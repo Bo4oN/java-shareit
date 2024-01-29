@@ -109,6 +109,7 @@ class ItemControllerTest {
     void searchItems() throws Exception {
 
         mvc.perform(get("/items/search")
+                        .header("X-Sharer-User-Id", 1)
                         .param("text", "text"))
                 .andDo(print())
                 .andExpect(status().isOk());

@@ -9,6 +9,8 @@ import ru.practicum.shareit.item.dto.ItemDtoWithBooking;
 import ru.practicum.shareit.item.model.Comment;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 /**
@@ -45,17 +47,20 @@ public class ItemController {
     @ResponseBody
     @GetMapping
     public List<ItemDtoWithBooking> getUserItems(@RequestHeader("X-Sharer-User-Id") int ownerId,
-                                                 @RequestParam(value = "from", defaultValue = "0") int from,
-                                                 @RequestParam(value = "size", defaultValue = "10") int size) {
+                                                 @RequestParam(
+                                                         value = "from", defaultValue = "0") @PositiveOrZero int from,
+                                                 @RequestParam(
+                                                         value = "size", defaultValue = "10") @Positive int size) {
         return service.getItemsListByOwner(ownerId, from, size);
     }
 
     @ResponseBody
     @GetMapping("/search")
     public List<ItemDto> searchItems(@RequestParam String text,
-                                     @RequestParam(value = "from", defaultValue = "0") int from,
-                                     @RequestParam(value = "size", defaultValue = "10") int size) {
-        return service.searchItems(text, from, size);
+                                     @RequestHeader("X-Sharer-User-Id") int ownerId,
+                                     @RequestParam(value = "from", defaultValue = "0") @PositiveOrZero int from,
+                                     @RequestParam(value = "size", defaultValue = "10") @Positive int size) {
+        return service.searchItems(text, ownerId, from, size);
     }
 
     @ResponseBody

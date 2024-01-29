@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 public class ItemRequestDto {
     private int id;
-    @NotNull
+    @NotBlank
     private String description;
     private LocalDateTime created;
     private List<ItemForOutRequest> items;

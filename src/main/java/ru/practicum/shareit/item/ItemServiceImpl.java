@@ -104,7 +104,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchItems(String text, int from, int size) {
+    public List<ItemDto> searchItems(String text, int userId, int from, int size) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         if (text.isBlank()) return Collections.emptyList();
         Pageable pageable = PageRequest.of(from, size);
         List<Item> list = repository.search(text, pageable);

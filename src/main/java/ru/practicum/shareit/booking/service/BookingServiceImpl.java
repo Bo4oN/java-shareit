@@ -37,7 +37,7 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new NotFoundException("Предмет не найден"));
         if (item.getOwner().getId() == userId) throw new NotFoundException("Нельзя забронировать свой предмет");
         if (!item.isAvailable()) throw new ItemAlreadyBookedException("Предмет не доступен");
-        bookingValidation(bookingDto);
+        validateBooking(bookingDto);
         Booking booking = BookingMapper.toBooking(bookingDto, item, user);
         booking.setStatus(Status.WAITING);
         repository.save(booking);
@@ -100,9 +100,6 @@ public class BookingServiceImpl implements BookingService {
             case REJECTED:
                 list.addAll(repository.findByBookerIdAndStatusOrderByStartDesc(userId, Status.REJECTED, pageable));
                 break;
-
-            //default:
-            //    throw new ItemAlreadyBookedException("Unknown state: " + state);
         }
         return list.stream()
                 .map(BookingMapper::toBookingResult)
@@ -135,16 +132,13 @@ public class BookingServiceImpl implements BookingService {
             case REJECTED:
                 list.addAll(repository.findStatusBookingForAllUserItems(userId, Status.REJECTED, pageable));
                 break;
-
-            //default:
-            //    throw new ItemAlreadyBookedException("Unknown state: " + state);
         }
         return list.stream()
                 .map(BookingMapper::toBookingResult)
                 .collect(Collectors.toList());
     }
 
-    private void bookingValidation(BookingDto bookingDto) {
+    private void validateBooking(BookingDto bookingDto) {
         if (bookingDto.getEnd().isBefore(bookingDto.getStart()) ||
                 bookingDto.getEnd().isEqual(bookingDto.getStart()) ||
                 bookingDto.getStart().isBefore(LocalDateTime.now()) ||
