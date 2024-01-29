@@ -14,8 +14,8 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
-@Sql(scripts={"classpath:data_test.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts={"classpath:data_test_deleted.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@Sql(scripts = {"classpath:data_test.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Sql(scripts = {"classpath:data_test_deleted.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 public class ItemIntegrationTest {
 
     @Autowired
