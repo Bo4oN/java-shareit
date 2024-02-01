@@ -1,6 +1,8 @@
 package ru.practicum.shareit.booking.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingDto;
@@ -33,12 +35,13 @@ public class BookingServiceImpl implements BookingService {
         User user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Item item = itemRepository.findById(bookingDto.getItemId())
                 .orElseThrow(() -> new NotFoundException("Предмет не найден"));
-        if (item.getOwner().getId() == userId) throw new NotFoundException("Нельзя забронировать своей предмет");
+        if (item.getOwner().getId() == userId) throw new NotFoundException("Нельзя забронировать свой предмет");
         if (!item.isAvailable()) throw new ItemAlreadyBookedException("Предмет не доступен");
-        bookingValidation(bookingDto);
+        validateBooking(bookingDto);
         Booking booking = BookingMapper.toBooking(bookingDto, item, user);
         booking.setStatus(Status.WAITING);
-        return BookingMapper.toBookingResult(repository.save(booking));
+        repository.save(booking);
+        return BookingMapper.toBookingResult(booking);
     }
 
     @Override
@@ -71,32 +74,32 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingResult> getAllUserBooking(State state, int userId) {
+    public List<BookingResult> getAllUserBooking(State state, int userId, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         List<Booking> list = new ArrayList<>();
+        Pageable pageable = PageRequest.of(from / size, size);
         switch (state) {
             case ALL:
-                list.addAll(repository.findByBookerIdOrderByStartDesc(userId));
+                list.addAll(repository.findByBookerIdOrderByStartDesc(userId, pageable));
                 break;
             case CURRENT:
                 list.addAll(repository.findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
-                        LocalDateTime.now(), LocalDateTime.now()));
+                        LocalDateTime.now(), LocalDateTime.now(), pageable));
                 break;
             case PAST:
-                list.addAll(repository.findByBookerIdAndEndIsBeforeOrderByStartDesc(userId, LocalDateTime.now()));
+                list.addAll(repository.findByBookerIdAndEndIsBeforeOrderByStartDesc(userId,
+                        LocalDateTime.now(), pageable));
                 break;
             case FUTURE:
-                list.addAll(repository.findByBookerIdAndStartIsAfterOrderByStartDesc(userId, LocalDateTime.now()));
+                list.addAll(repository.findByBookerIdAndStartIsAfterOrderByStartDesc(userId,
+                        LocalDateTime.now(), pageable));
                 break;
             case WAITING:
-                list.addAll(repository.findByBookerIdAndStatusOrderByStartDesc(userId, Status.WAITING));
+                list.addAll(repository.findByBookerIdAndStatusOrderByStartDesc(userId, Status.WAITING, pageable));
                 break;
             case REJECTED:
-                list.addAll(repository.findByBookerIdAndStatusOrderByStartDesc(userId, Status.REJECTED));
+                list.addAll(repository.findByBookerIdAndStatusOrderByStartDesc(userId, Status.REJECTED, pageable));
                 break;
-
-            default:
-                throw new ItemAlreadyBookedException("Unknown state: " + state);
         }
         return list.stream()
                 .map(BookingMapper::toBookingResult)
@@ -104,40 +107,38 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingResult> getAllBookingsForAllUserItems(State state, int userId) {
+    public List<BookingResult> getAllBookingsForAllUserItems(State state, int userId, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         List<Item> itemslist = itemRepository.findByOwnerId(userId);
         if (itemslist.isEmpty()) throw new NotFoundException("У пользователя нет ни одного обьекта");
         List<Booking> list = new ArrayList<>();
+        Pageable pageable = PageRequest.of(from / size, size);
         switch (state) {
             case ALL:
-                list.addAll(repository.findAllBookingForAllUserItems(userId));
+                list.addAll(repository.findAllBookingForAllUserItems(userId, pageable));
                 break;
             case CURRENT:
-                list.addAll(repository.findCurrentBookingsForAllUserItems(userId, LocalDateTime.now()));
+                list.addAll(repository.findCurrentBookingsForAllUserItems(userId, LocalDateTime.now(), pageable));
                 break;
             case PAST:
-                list.addAll(repository.findPastBookingForAllUserItems(userId, LocalDateTime.now()));
+                list.addAll(repository.findPastBookingForAllUserItems(userId, LocalDateTime.now(), pageable));
                 break;
             case FUTURE:
-                list.addAll(repository.findFutureBookingForAllUserItems(userId, LocalDateTime.now()));
+                list.addAll(repository.findFutureBookingForAllUserItems(userId, LocalDateTime.now(), pageable));
                 break;
             case WAITING:
-                list.addAll(repository.findStatusBookingForAllUserItems(userId, Status.WAITING));
+                list.addAll(repository.findStatusBookingForAllUserItems(userId, Status.WAITING, pageable));
                 break;
             case REJECTED:
-                list.addAll(repository.findStatusBookingForAllUserItems(userId, Status.REJECTED));
+                list.addAll(repository.findStatusBookingForAllUserItems(userId, Status.REJECTED, pageable));
                 break;
-
-            default:
-                throw new ItemAlreadyBookedException("Unknown state: " + state);
         }
         return list.stream()
                 .map(BookingMapper::toBookingResult)
                 .collect(Collectors.toList());
     }
 
-    private void bookingValidation(BookingDto bookingDto) {
+    private void validateBooking(BookingDto bookingDto) {
         if (bookingDto.getEnd().isBefore(bookingDto.getStart()) ||
                 bookingDto.getEnd().isEqual(bookingDto.getStart()) ||
                 bookingDto.getStart().isBefore(LocalDateTime.now()) ||

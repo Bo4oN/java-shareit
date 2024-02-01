@@ -1,16 +1,20 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.exceptions.DoesNotBelongToOwnerException;
 import ru.practicum.shareit.exceptions.ItemAlreadyBookedException;
 import ru.practicum.shareit.exceptions.NotFoundException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.request.ItemRequest;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -26,11 +30,20 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final ItemRequestRepository requestRepository;
 
     @Override
     public ItemDto addItem(ItemDto itemDto, int ownerId) {
         User user = userRepository.findById(ownerId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         Item item = ItemMapper.toItem(itemDto, user);
+        if (itemDto.getRequestId() != null) {
+            ItemRequest request = requestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new NotFoundException("Запрос не найден"));
+            item.setItemRequest(request);
+            ItemDto itemDtoOut = ItemMapper.toItemDto(repository.save(item));
+            itemDtoOut.setRequestId(request.getId());
+            return itemDtoOut;
+        }
         return ItemMapper.toItemDto(repository.save(item));
     }
 
@@ -43,7 +56,8 @@ public class ItemServiceImpl implements ItemService {
         if (itemDto.getAvailable() != null) i.setAvailable(itemDto.getAvailable());
         if (itemDto.getDescription() != null) i.setDescription(itemDto.getDescription());
         if (itemDto.getName() != null) i.setName(itemDto.getName());
-        return ItemMapper.toItemDto(repository.save(i));
+        repository.save(i);
+        return ItemMapper.toItemDto(i);
     }
 
     @Override
@@ -68,8 +82,9 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDtoWithBooking> getItemsListByOwner(int ownerId) {
-        List<Item> itemList = repository.findByOwnerId(ownerId);
+    public List<ItemDtoWithBooking> getItemsListByOwner(int ownerId, int from, int size) {
+        Pageable pageable = PageRequest.of(from, size);
+        List<Item> itemList = repository.findByOwnerId(ownerId, pageable);
         List<ItemDtoWithBooking> itemListWithBooking = itemList.stream()
                 .map(ItemMapper::toItemDtoWithBookingDate)
                 .collect(Collectors.toList());
@@ -89,9 +104,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemDto> searchItems(String text) {
+    public List<ItemDto> searchItems(String text, int userId, int from, int size) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
         if (text.isBlank()) return Collections.emptyList();
-        return ItemMapper.toItemDtoList(repository.search(text));
+        Pageable pageable = PageRequest.of(from, size);
+        List<Item> list = repository.search(text, pageable);
+        return ItemMapper.toItemDtoList(list);
     }
 
     @Override
@@ -109,6 +128,7 @@ public class ItemServiceImpl implements ItemService {
         comment.setAuthor(user);
         comment.setItem(item);
         comment.setCreatedDate(LocalDateTime.now());
-        return CommentMapper.toCommentDto(commentRepository.save(comment));
+        commentRepository.save(comment);
+        return CommentMapper.toCommentDto(comment);
     }
 }

@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingResult;
@@ -8,11 +9,14 @@ import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 /**
  * TODO Sprint add-bookings.
  */
+@Validated
 @RestController
 @RequestMapping(path = "/bookings")
 @RequiredArgsConstructor
@@ -45,14 +49,18 @@ public class BookingController {
     @ResponseBody
     @GetMapping
     public List<BookingResult> getAllBookingsByUser(@RequestParam(defaultValue = "ALL") String state,
+                                                    @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                                    @RequestParam(defaultValue = "10") @Positive int size,
                                                     @RequestHeader("X-Sharer-User-Id") int userId) {
-        return service.getAllUserBooking(State.getEnumByString(state), userId);
+        return service.getAllUserBooking(State.getEnumByString(state), userId, from, size);
     }
 
     @ResponseBody
     @GetMapping("/owner")
     public List<BookingResult> getAllBookingsForAllUserItems(@RequestParam(defaultValue = "ALL") String state,
+                                                             @RequestParam(defaultValue = "0") @PositiveOrZero int from,
+                                                             @RequestParam(defaultValue = "10") @Positive int size,
                                                              @RequestHeader("X-Sharer-User-Id") int userId) {
-        return service.getAllBookingsForAllUserItems(State.getEnumByString(state), userId);
+        return service.getAllBookingsForAllUserItems(State.getEnumByString(state), userId, from, size);
     }
 }
