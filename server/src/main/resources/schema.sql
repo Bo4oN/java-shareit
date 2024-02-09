@@ -1,4 +1,6 @@
-DROP ALL OBJECTS;
+DROP TABLE IF EXISTS users, requests, items, comments, bookings;
+
+DROP TYPE IF EXISTS booking_status;
 
 CREATE TYPE booking_status as ENUM ('WAITING', 'APPROVED', 'REJECTED', 'CANCELED');
 
