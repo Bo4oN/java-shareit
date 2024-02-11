@@ -78,13 +78,14 @@ public class ItemServiceImpl implements ItemService {
         itemDto.setComments(commentRepository.findByItemId(itemId).stream()
                 .map(CommentMapper::toCommentDto)
                 .collect(Collectors.toList()));
+            System.out.println(itemDto);
         return itemDto;
     }
 
     @Override
     public List<ItemDtoWithBooking> getItemsListByOwner(int ownerId, int from, int size) {
         Pageable pageable = PageRequest.of(from, size);
-        List<Item> itemList = repository.findByOwnerId(ownerId, pageable);
+        List<Item> itemList = repository.findByOwnerIdOrderById(ownerId, pageable);
         List<ItemDtoWithBooking> itemListWithBooking = itemList.stream()
                 .map(ItemMapper::toItemDtoWithBookingDate)
                 .collect(Collectors.toList());

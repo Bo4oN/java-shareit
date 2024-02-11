@@ -152,7 +152,7 @@ public class ItemServiceImplTest {
     void getItemsListByOwner() {
         Item item2 = new Item("item2", "description2", true, testUser);
 
-        when(itemRepository.findByOwnerId(testUser.getId(), PageRequest.of(0, 10)))
+        when(itemRepository.findByOwnerIdOrderById(testUser.getId(), PageRequest.of(0, 10)))
                 .thenReturn(List.of(testItem, item2));
 
         List<ItemDtoWithBooking> list = service.getItemsListByOwner(testUser.getId(), 0, 10);

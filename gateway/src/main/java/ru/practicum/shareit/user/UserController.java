@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.dto.UserDto;
 
@@ -14,7 +13,6 @@ import javax.validation.Valid;
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
 @Slf4j
-@Validated
 public class UserController {
     private final UserClient userClient;
 
@@ -25,7 +23,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public ResponseEntity<Object> getUser(@RequestParam int userId) {
+    public ResponseEntity<Object> getUser(@PathVariable long userId) {
         log.info("Get user, userId={}", userId);
         return userClient.getUser(userId);
     }
@@ -37,14 +35,14 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public ResponseEntity<Object> updateUser(@PathVariable int userId,
-                                             @RequestBody @Valid UserDto userDto) {
+    public ResponseEntity<Object> updateUser(@PathVariable long userId,
+                                             @RequestBody UserDto userDto) {
         log.info("Update user, userId={}, userDto={}", userId, userDto);
         return userClient.updateUser(userDto, userId);
     }
 
     @DeleteMapping("/{userId}")
-    public ResponseEntity<Object> deleteUser(@PathVariable int userId) {
+    public ResponseEntity<Object> deleteUser(@PathVariable long userId) {
         log.info("Delete user, userId={}", userId);
         return userClient.deleteUser(userId);
     }

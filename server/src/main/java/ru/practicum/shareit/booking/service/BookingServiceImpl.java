@@ -109,7 +109,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     public List<BookingResult> getAllBookingsForAllUserItems(State state, int userId, int from, int size) {
         userRepository.findById(userId).orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-        List<Item> itemslist = itemRepository.findByOwnerId(userId);
+        List<Item> itemslist = itemRepository.findByOwnerIdOrderById(userId);
         if (itemslist.isEmpty()) throw new NotFoundException("У пользователя нет ни одного обьекта");
         List<Booking> list = new ArrayList<>();
         Pageable pageable = PageRequest.of(from / size, size);

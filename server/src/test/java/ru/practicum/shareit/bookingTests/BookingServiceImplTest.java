@@ -246,7 +246,7 @@ class BookingServiceImplTest {
     void getAllBookingsForAllUserItemsAll() {
         when(userRepository.findById(testUser.getId()))
                 .thenReturn(Optional.of(testUser));
-        when(itemRepository.findByOwnerId(testUser.getId())).thenReturn(List.of(testItem));
+        when(itemRepository.findByOwnerIdOrderById(testUser.getId())).thenReturn(List.of(testItem));
         when(bookingRepository.findAllBookingForAllUserItems(anyInt(), any(Pageable.class)))
                 .thenReturn(List.of(BookingMapper.toBooking(booking, testItem, testUser)));
 
@@ -259,7 +259,7 @@ class BookingServiceImplTest {
     void getAllBookingsForAllUserItemsCurrent() {
         when(userRepository.findById(testUser.getId()))
                 .thenReturn(Optional.of(testUser));
-        when(itemRepository.findByOwnerId(testUser.getId())).thenReturn(List.of(testItem));
+        when(itemRepository.findByOwnerIdOrderById(testUser.getId())).thenReturn(List.of(testItem));
         when(bookingRepository.findCurrentBookingsForAllUserItems(anyInt(), any(LocalDateTime.class), any(Pageable.class)))
                 .thenReturn(List.of(BookingMapper.toBooking(booking, testItem, testUser)));
 
@@ -272,7 +272,7 @@ class BookingServiceImplTest {
     void getAllBookingsForAllUserItemsPast() {
         when(userRepository.findById(testUser.getId()))
                 .thenReturn(Optional.of(testUser));
-        when(itemRepository.findByOwnerId(testUser.getId())).thenReturn(List.of(testItem));
+        when(itemRepository.findByOwnerIdOrderById(testUser.getId())).thenReturn(List.of(testItem));
         when(bookingRepository.findPastBookingForAllUserItems(anyInt(), any(LocalDateTime.class), any(Pageable.class)))
                 .thenReturn(List.of(BookingMapper.toBooking(booking, testItem, testUser)));
 
@@ -285,7 +285,7 @@ class BookingServiceImplTest {
     void getAllBookingsForAllUserItemsFuture() {
         when(userRepository.findById(testUser.getId()))
                 .thenReturn(Optional.of(testUser));
-        when(itemRepository.findByOwnerId(testUser.getId())).thenReturn(List.of(testItem));
+        when(itemRepository.findByOwnerIdOrderById(testUser.getId())).thenReturn(List.of(testItem));
         when(bookingRepository.findFutureBookingForAllUserItems(anyInt(), any(LocalDateTime.class), any(Pageable.class)))
                 .thenReturn(List.of(BookingMapper.toBooking(booking, testItem, testUser)));
 
@@ -298,7 +298,7 @@ class BookingServiceImplTest {
     void getAllBookingsForAllUserItemsWaiting() {
         when(userRepository.findById(testUser.getId()))
                 .thenReturn(Optional.of(testUser));
-        when(itemRepository.findByOwnerId(testUser.getId())).thenReturn(List.of(testItem));
+        when(itemRepository.findByOwnerIdOrderById(testUser.getId())).thenReturn(List.of(testItem));
         when(bookingRepository.findStatusBookingForAllUserItems(anyInt(), any(Status.class), any(Pageable.class)))
                 .thenReturn(List.of(BookingMapper.toBooking(booking, testItem, testUser)));
 
@@ -311,7 +311,7 @@ class BookingServiceImplTest {
     void getAllBookingsForAllUserItemsRejected() {
         when(userRepository.findById(testUser.getId()))
                 .thenReturn(Optional.of(testUser));
-        when(itemRepository.findByOwnerId(testUser.getId())).thenReturn(List.of(testItem));
+        when(itemRepository.findByOwnerIdOrderById(testUser.getId())).thenReturn(List.of(testItem));
         when(bookingRepository.findStatusBookingForAllUserItems(anyInt(), any(Status.class), any(Pageable.class)))
                 .thenReturn(List.of(BookingMapper.toBooking(booking, testItem, testUser)));
 

@@ -28,7 +28,7 @@ public class ItemClient extends BaseClient {
     }
 
     public ResponseEntity<Object> addItem(ItemDto itemDto, long userId) {
-        return post("", itemDto);
+        return post("", userId, itemDto);
     }
 
     public ResponseEntity<Object> updateItem(ItemDto itemDto, long userId, long itemId) {
@@ -51,7 +51,7 @@ public class ItemClient extends BaseClient {
         Map<String, Object> parameters = Map.of(
                 "text", text,
                 "from", from,
-                "szie", size
+                "size", size
         );
         return get("/search?text={text}&from={from}&size={size}", userId, parameters);
     }

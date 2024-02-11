@@ -13,7 +13,7 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
 @Controller
-@RequestMapping(path = "/request")
+@RequestMapping(path = "/requests")
 @RequiredArgsConstructor
 @Slf4j
 @Validated
@@ -22,28 +22,28 @@ public class RequestController {
 
     @PostMapping
     public ResponseEntity<Object> addRequestItem(@RequestBody @Valid ItemRequestDto requestDto,
-                                                 @RequestHeader("X-Sharer-User-Id") int userId) {
-        log.info("Create new requestItem, content - {}", requestDto.getContent());
+                                                 @RequestHeader("X-Sharer-User-Id") long userId) {
+        log.info("Create new requestItem, content - {}", requestDto.getDescription());
         return requestClient.addRequestItem(requestDto, userId);
     }
 
     @GetMapping
-    public ResponseEntity<Object> getYourRequests(@RequestHeader("X-Sharer-User-Id") int userId) {
+    public ResponseEntity<Object> getYourRequests(@RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Get all your requests, userId={}", userId);
         return requestClient.getYourRequests(userId);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<Object> getOtherRequest(@RequestParam(defaultValue = "0") @PositiveOrZero int from,
-                                                  @RequestParam(defaultValue = "10") @Positive int size,
-                                                  @RequestHeader("X-Sharer-User-Id") int userId) {
+    public ResponseEntity<Object> getOtherRequest(@RequestParam(defaultValue = "0") @PositiveOrZero Integer from,
+                                                  @RequestParam(defaultValue = "10") @Positive Integer size,
+                                                  @RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Get all requests, userId={}, from={}, size={}", userId, from, size);
         return requestClient.getOtherRequest(userId, from, size);
     }
 
     @GetMapping("/{requestId}")
-    public ResponseEntity<Object> getRequestById(@PathVariable int requestId,
-                                                 @RequestHeader("X-Sharer-User-Id") int userId) {
+    public ResponseEntity<Object> getRequestById(@PathVariable long requestId,
+                                                 @RequestHeader("X-Sharer-User-Id") long userId) {
         log.info("Get request by requestId={}, userId={}", requestId, userId);
         return requestClient.getRequestById(requestId, userId);
     }
