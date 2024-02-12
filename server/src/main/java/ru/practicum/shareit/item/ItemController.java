@@ -8,9 +8,6 @@ import ru.practicum.shareit.item.dto.ItemDtoResult;
 import ru.practicum.shareit.item.dto.ItemDtoWithBooking;
 import ru.practicum.shareit.item.model.Comment;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 
 @RestController
@@ -46,9 +43,9 @@ public class ItemController {
     @GetMapping
     public List<ItemDtoWithBooking> getUserItems(@RequestHeader("X-Sharer-User-Id") int ownerId,
                                                  @RequestParam(
-                                                         value = "from", defaultValue = "0") @PositiveOrZero int from,
+                                                         value = "from", defaultValue = "0") int from,
                                                  @RequestParam(
-                                                         value = "size", defaultValue = "10") @Positive int size) {
+                                                         value = "size", defaultValue = "10") int size) {
         return service.getItemsListByOwner(ownerId, from, size);
     }
 
@@ -56,15 +53,15 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> searchItems(@RequestParam String text,
                                      @RequestHeader("X-Sharer-User-Id") int ownerId,
-                                     @RequestParam(value = "from", defaultValue = "0") @PositiveOrZero int from,
-                                     @RequestParam(value = "size", defaultValue = "10") @Positive int size) {
+                                     @RequestParam(value = "from", defaultValue = "0") int from,
+                                     @RequestParam(value = "size", defaultValue = "10")int size) {
         return service.searchItems(text, ownerId, from, size);
     }
 
     @ResponseBody
     @PostMapping("/{itemId}/comment")
     public CommentDto addComment(@PathVariable int itemId,
-                                 @RequestBody @Valid Comment comment,
+                                 @RequestBody Comment comment,
                                  @RequestHeader("X-Sharer-User-Id") int authorId) {
         return service.addComment(itemId, comment, authorId);
     }
